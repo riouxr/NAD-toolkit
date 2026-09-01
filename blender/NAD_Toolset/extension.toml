@@ -1,0 +1,15 @@
+schema_version = "1.0"
+
+id = "nad_toolset"
+name = "NAD Toolset"
+version = "1.5.0"
+tagline = "Simple batch renamer"
+maintainer = "NAD"
+type = "add-on"
+
+blender_version_min = "4.5.0"
+
+license = ["SPDX:GPL-3.0-or-later"]
+
+[permissions]
+files = "No file access"
