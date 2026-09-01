@@ -272,6 +272,10 @@ class NAD_PT_Toolset(bpy.types.Panel):
         layout = self.layout
         scene = context.scene
 
+        layout.prop(scene, "nad_name1")
+        layout.prop(scene, "nad_name2")
+        layout.prop(scene, "nad_name3")
+
         # Suffix toggle row
         row = layout.row(align=True)
         row.prop_enum(scene, "nad_suffix", 'SD')
@@ -279,9 +283,6 @@ class NAD_PT_Toolset(bpy.types.Panel):
         row.prop_enum(scene, "nad_suffix", 'EM')
         row.prop_enum(scene, "nad_suffix", 'DC')
 
-        layout.prop(scene, "nad_name1")
-        layout.prop(scene, "nad_name2")
-        layout.prop(scene, "nad_name3")
         layout.operator("nad.rename_objects")
         layout.separator()
         layout.operator("nad.sanity_check", icon='VIEWZOOM')
