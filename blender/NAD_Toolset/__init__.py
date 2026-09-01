@@ -37,7 +37,7 @@ class NAD_OT_Rename(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
         base = _join_name_parts(scene.nad_name1, scene.nad_name2, scene.nad_name3)
-        suffix = scene.nad_suffix
+        suffix = "" if scene.nad_suffix == 'NONE' else scene.nad_suffix
         objs = context.selected_objects
         selected_set = set(objs)
 
@@ -278,6 +278,7 @@ class NAD_PT_Toolset(bpy.types.Panel):
 
         # Suffix toggle row
         row = layout.row(align=True)
+        row.prop_enum(scene, "nad_suffix", 'NONE')
         row.prop_enum(scene, "nad_suffix", 'SD')
         row.prop_enum(scene, "nad_suffix", 'GL')
         row.prop_enum(scene, "nad_suffix", 'EM')
@@ -309,6 +310,7 @@ def register():
     bpy.types.Scene.nad_suffix = bpy.props.EnumProperty(
         name="Suffix",
         items=[
+            ('NONE', "None", "No suffix"),
             ('SD', "SD", "Static/Diffuse"),
             ('GL', "GL", "Glass"),
             ('EM', "EM", "Emissive"),
