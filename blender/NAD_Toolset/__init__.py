@@ -1,13 +1,3 @@
-bl_info = {
-    "name": "NAD Toolset",
-    "author": "NAD",
-    "version": (1, 7),
-    "blender": (4, 5, 0),
-    "location": "View3D > N Panel > Tool",
-    "description": "Batch renamer + Sanity Check",
-    "category": "Object",
-}
-
 import bpy
 import re
 import bmesh

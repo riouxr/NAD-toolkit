@@ -7,7 +7,8 @@ Any of the three name fields can be left empty — empty fields are skipped so n
 
 ## blender/NAD_Toolset
 
-Blender add-on (4.5+). Zip the `NAD_Toolset` folder to install, or use `Install from Disk` on the folder in Blender's Extensions.
+Blender Extension (4.5+, uses `blender_manifest.toml`). Zip the `NAD_Toolset` folder and install via
+*Preferences > Get Extensions > (dropdown) Install from Disk*.
 
 ## maya/NAD_rename_Maya.py
 

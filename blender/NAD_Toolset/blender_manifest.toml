@@ -2,14 +2,11 @@ schema_version = "1.0"
 
 id = "nad_toolset"
 name = "NAD Toolset"
-version = "1.7.0"
-tagline = "Simple batch renamer"
+version = "1.8.0"
+tagline = "Batch renamer + Sanity Check"
 maintainer = "NAD"
 type = "add-on"
 
 blender_version_min = "4.5.0"
 
 license = ["SPDX:GPL-3.0-or-later"]
-
-[permissions]
-files = "No file access"
