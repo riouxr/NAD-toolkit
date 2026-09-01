@@ -1,7 +1,7 @@
 bl_info = {
     "name": "NAD Toolset",
     "author": "NAD",
-    "version": (1, 5),
+    "version": (1, 6),
     "blender": (4, 5, 0),
     "location": "View3D > N Panel > Tool",
     "description": "Batch renamer + Sanity Check",
@@ -30,6 +30,25 @@ def _join_name_parts(*parts):
     return "_".join(p for p in parts if p)
 
 
+def _current_suffix(scene):
+    for key in SUFFIXES:
+        if getattr(scene, f"nad_suffix_{key.lower()}"):
+            return key
+    return ""
+
+
+def _make_suffix_update(key):
+    prop_name = f"nad_suffix_{key.lower()}"
+
+    def _update(self, context):
+        if getattr(self, prop_name):
+            for other in SUFFIXES:
+                if other != key:
+                    setattr(self, f"nad_suffix_{other.lower()}", False)
+
+    return _update
+
+
 class NAD_OT_Rename(bpy.types.Operator):
     bl_idname = "nad.rename_objects"
     bl_label = "Name"
@@ -37,7 +56,7 @@ class NAD_OT_Rename(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
         base = _join_name_parts(scene.nad_name1, scene.nad_name2, scene.nad_name3)
-        suffix = "" if scene.nad_suffix == 'NONE' else scene.nad_suffix
+        suffix = _current_suffix(scene)
         objs = context.selected_objects
         selected_set = set(objs)
 
@@ -278,11 +297,8 @@ class NAD_PT_Toolset(bpy.types.Panel):
 
         # Suffix toggle row
         row = layout.row(align=True)
-        row.prop_enum(scene, "nad_suffix", 'NONE')
-        row.prop_enum(scene, "nad_suffix", 'SD')
-        row.prop_enum(scene, "nad_suffix", 'GL')
-        row.prop_enum(scene, "nad_suffix", 'EM')
-        row.prop_enum(scene, "nad_suffix", 'DC')
+        for key in SUFFIXES:
+            row.prop(scene, f"nad_suffix_{key.lower()}", text=key, toggle=True)
 
         layout.operator("nad.rename_objects")
         layout.separator()
@@ -307,17 +323,9 @@ def register():
     bpy.types.Scene.nad_name1 = bpy.props.StringProperty(name="Name 1")
     bpy.types.Scene.nad_name2 = bpy.props.StringProperty(name="Name 2")
     bpy.types.Scene.nad_name3 = bpy.props.StringProperty(name="Name 3")
-    bpy.types.Scene.nad_suffix = bpy.props.EnumProperty(
-        name="Suffix",
-        items=[
-            ('NONE', "None", "No suffix"),
-            ('SD', "SD", "Static/Diffuse"),
-            ('GL', "GL", "Glass"),
-            ('EM', "EM", "Emissive"),
-            ('DC', "DC", "Decal"),
-        ],
-        default='SD',
-    )
+    for key in SUFFIXES:
+        setattr(bpy.types.Scene, f"nad_suffix_{key.lower()}", bpy.props.BoolProperty(
+            name=key, default=False, update=_make_suffix_update(key)))
 
 
 def unregister():
@@ -326,7 +334,8 @@ def unregister():
     del bpy.types.Scene.nad_name1
     del bpy.types.Scene.nad_name2
     del bpy.types.Scene.nad_name3
-    del bpy.types.Scene.nad_suffix
+    for key in SUFFIXES:
+        delattr(bpy.types.Scene, f"nad_suffix_{key.lower()}")
 
 
 if __name__ == "__main__":
