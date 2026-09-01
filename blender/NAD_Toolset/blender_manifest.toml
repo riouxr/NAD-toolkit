@@ -1,8 +1,8 @@
-schema_version = "1.0"
+schema_version = "1.0.0"
 
 id = "nad_toolset"
 name = "NAD Toolset"
-version = "1.8.0"
+version = "1.8.1"
 tagline = "Batch renamer + Sanity Check"
 maintainer = "NAD"
 type = "add-on"
