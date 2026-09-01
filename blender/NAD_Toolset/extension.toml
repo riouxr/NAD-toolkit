@@ -2,7 +2,7 @@ schema_version = "1.0"
 
 id = "nad_toolset"
 name = "NAD Toolset"
-version = "1.6.0"
+version = "1.7.0"
 tagline = "Simple batch renamer"
 maintainer = "NAD"
 type = "add-on"

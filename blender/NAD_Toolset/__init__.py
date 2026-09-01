@@ -1,7 +1,7 @@
 bl_info = {
     "name": "NAD Toolset",
     "author": "NAD",
-    "version": (1, 6),
+    "version": (1, 7),
     "blender": (4, 5, 0),
     "location": "View3D > N Panel > Tool",
     "description": "Batch renamer + Sanity Check",
@@ -20,6 +20,12 @@ MAX_IDX = 8
 _sanity_results = []
 
 SUFFIXES = ['SD', 'GL', 'EM', 'DC']
+SUFFIX_DESCRIPTIONS = {
+    'SD': "Static/Diffuse",
+    'GL': "Glass",
+    'EM': "Emissive",
+    'DC': "Decal",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -52,6 +58,11 @@ def _make_suffix_update(key):
 class NAD_OT_Rename(bpy.types.Operator):
     bl_idname = "nad.rename_objects"
     bl_label = "Name"
+    bl_description = (
+        "Rename the selected objects to SM_Name1_Name2_Name3_Suffix_## "
+        "(empty name fields and no suffix are skipped), numbering each "
+        "selected object after the highest existing match"
+    )
 
     def execute(self, context):
         scene = context.scene
@@ -197,6 +208,7 @@ def _check_overlapping_faces(bm):
 class NAD_OT_SanityCheckPopup(bpy.types.Operator):
     bl_idname = "nad.sanity_check_popup"
     bl_label = "Sanity Check Results"
+    bl_description = "Show the issues found by the last Sanity Check run"
 
     def execute(self, context):
         return {'FINISHED'}
@@ -227,6 +239,11 @@ class NAD_OT_SanityCheck(bpy.types.Operator):
     bl_idname = "nad.sanity_check"
     bl_label = "Sanity Check"
     bl_options = {'REGISTER'}
+    bl_description = (
+        "Scan every mesh object in the scene for naming-convention "
+        "violations, nGons, zero-area faces, concave polygons, flipped "
+        "normals, overlapping verts/faces, and UVs crossing UDIM borders"
+    )
 
     def execute(self, context):
         global _sanity_results
@@ -320,12 +337,21 @@ classes = (
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.nad_name1 = bpy.props.StringProperty(name="Name 1")
-    bpy.types.Scene.nad_name2 = bpy.props.StringProperty(name="Name 2")
-    bpy.types.Scene.nad_name3 = bpy.props.StringProperty(name="Name 3")
+    bpy.types.Scene.nad_name1 = bpy.props.StringProperty(
+        name="Name 1",
+        description="First part of the object name (e.g. asset name). Leave empty to skip it")
+    bpy.types.Scene.nad_name2 = bpy.props.StringProperty(
+        name="Name 2",
+        description="Second part of the object name, joined after Name 1 with an underscore. Leave empty to skip it")
+    bpy.types.Scene.nad_name3 = bpy.props.StringProperty(
+        name="Name 3",
+        description="Third part of the object name, joined after Name 2 with an underscore. Leave empty to skip it")
     for key in SUFFIXES:
         setattr(bpy.types.Scene, f"nad_suffix_{key.lower()}", bpy.props.BoolProperty(
-            name=key, default=False, update=_make_suffix_update(key)))
+            name=key,
+            description=f"Add the '{key}' ({SUFFIX_DESCRIPTIONS[key]}) suffix to the name. "
+                        f"Selecting it deselects the other suffixes; deselect it for no suffix",
+            default=False, update=_make_suffix_update(key)))
 
 
 def unregister():

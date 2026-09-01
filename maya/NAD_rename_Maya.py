@@ -5,7 +5,12 @@ def _join_name_parts(*parts):
     return "_".join(p for p in parts if p)
 
 def nad_rename_tool():
-    # Prompt user for up to 3 name parts, joined by underscores
+    """Rename the selected objects to SM_Name1_Name2_Name3_##.
+
+    Prompts for up to 3 name fields; empty fields are skipped so no
+    double underscores are produced. Numbers the selected objects
+    starting after the highest existing match for that name.
+    """
     fields = []
     for i in range(1, 4):
         result = cmds.promptDialog(
